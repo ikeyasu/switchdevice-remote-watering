@@ -4,6 +4,9 @@ angular.module('remoteWateringApp')
   .controller('SettingsCtrl', function ($scope, User, Auth) {
     $scope.errors = {};
 
+    $scope.isLoggedIn = Auth.isLoggedIn;
+    $scope.getCurrentUser = Auth.getCurrentUser;
+
     $scope.changePassword = function(form) {
       $scope.submitted = true;
       if(form.$valid) {

@@ -11,11 +11,19 @@
 
 var _ = require('lodash');
 var Thing = require('./thing.model');
+var User = require('../user/user.model');
 
 // Get list of things
 exports.index = function(req, res) {
-  Thing.find(function (err, things) {
-    if(err) { return handleError(res, err); }
+  var condition = {};
+  var user_id = req.params.user_id;
+  if (user_id) {
+    condition = _.merge(condition, {user: user_id});
+  }
+  Thing.find(condition, function (err, things) {
+    if (err) {
+      return handleError(res, err);
+    }
     return res.json(200, things);
   });
 };
@@ -31,9 +39,16 @@ exports.show = function(req, res) {
 
 // Creates a new thing in the DB.
 exports.create = function(req, res) {
-  Thing.create(req.body, function(err, thing) {
-    if(err) { return handleError(res, err); }
-    return res.json(201, thing);
+  User.findById(req.body.user_id, function(err, user) {
+    if (err) return res.json(401);
+    if (user) {
+      req.body.user = user._id;
+    }
+    req.body.active = true;
+    Thing.create(req.body, function(err, thing) {
+      if(err) { return handleError(res, err); }
+      return res.json(201, thing);
+    });
   });
 };
 
@@ -59,6 +74,23 @@ exports.destroy = function(req, res) {
     thing.remove(function(err) {
       if(err) { return handleError(res, err); }
       return res.send(204);
+    });
+  });
+};
+
+exports.watering = function(req, res) {
+  var condition  = {user: req.params.user_id, active: true, name: "watering"};
+  Thing.findOne(condition, function (err, thing) {
+    if (err) return handleError(res, err);
+    if (!thing) return res.json(404, {});
+    thing.active = false;
+    thing.save(function(err) {
+      if (err) return handleError(res, err);
+      return res.json(200, {
+        name: thing.name,
+        value: thing.value,
+        now: (new Date()).toISOString()
+      });
     });
   });
 };

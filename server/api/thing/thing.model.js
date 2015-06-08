@@ -5,7 +5,8 @@ var mongoose = require('mongoose'),
 
 var ThingSchema = new Schema({
   name: String,
-  info: String,
+  user: { type: Schema.Types.ObjectId, ref: 'User' },
+  value: String,
   active: Boolean
 });
 
