@@ -15,7 +15,7 @@
     </div>
   </div>
 
-  <form class="thing-form">
+  <form ng-show="isLoggedIn()" class="thing-form">
     <p class="input-group">
       <span class="input-group-btn">
         <button type="submit" class="btn btn-primary" ng-click="setWatering()">Watering</button>
