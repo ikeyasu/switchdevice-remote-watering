@@ -12,10 +12,11 @@
 var _ = require('lodash');
 var Thing = require('./thing.model');
 var User = require('../user/user.model');
+var Log = require('../log/log.model');
 
 // Get list of things
 exports.index = function(req, res) {
-  var condition = {};
+  var condition = {active: true};
   var user_id = req.params.user_id;
   if (user_id) {
     condition = _.merge(condition, {user: user_id});
@@ -79,19 +80,24 @@ exports.destroy = function(req, res) {
 };
 
 exports.watering = function(req, res) {
-  var condition  = {user: req.params.user_id, active: true, name: "watering"};
+  var user_id = req.params.user_id;
+  var voltage = req.params.voltage;
+  if (voltage) {
+    Log.create({ name: 'voltage', value: voltage, user: user_id });
+  }
+  var condition  = {user: user_id, active: true, name: 'watering'};
   Thing.findOne(condition, function (err, thing) {
     if (err) return handleError(res, err);
     if (!thing) return res.json(404, {});
     thing.active = false;
-    thing.save(function(err) {
-      if (err) return handleError(res, err);
-      return res.json(200, {
-        name: thing.name,
-        value: thing.value,
-        now: (new Date()).toISOString()
-      });
+    Log.create({ name: 'waterinig', value: thing.value, user: user_id });
+    var ret = res.json(200, {
+      name: thing.name,
+      value: thing.value,
+      now: (new Date()).toISOString()
     });
+    thing.remove();
+    return ret;
   });
 };
 

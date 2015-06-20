@@ -2,26 +2,52 @@
 
 <header class="hero-unit" id="banner">
   <div class="container">
-    <h1>Remote watering</h1>
+    <h3>Remote watering</h3>
   </div>
 </header>
 
 <div class="container">
+  <form ng-show="isLoggedIn()" class="thing-form">
+    <p class="input-group">
+      <span class="input-group-btn">
+        <button type="submit" class="btn btn-primary" ng-click="setWatering()">Watering 20 sec</button>
+      </span>
+    </p>
+    <p class="input-group">
+      <span class="input-group-btn">
+        <button type="submit" class="btn btn-primary" ng-click="setWatering(10000)">Watering 10 sec</button>
+      </span>
+    </p>
+    <p class="input-group">
+      <span class="input-group-btn">
+        <button type="submit" class="btn btn-primary" ng-click="setWatering(5000)">Watering 5 sec</button>
+      </span>
+    </p>
+    <p class="input-group">
+      <span class="input-group-btn">
+        <button type="submit" class="btn btn-primary" ng-click="setWatering(3000)">Watering 3 sec</button>
+      </span>
+    </p>
+  </form>
+
   <div class="row">
     <div class="col-lg-12">
-      <ul class="nav nav-tabs nav-stacked col-md-4 col-lg-4 col-sm-6" ng-repeat="thing in awesomeThings">
-        <li><a href="#" tooltip="{{thing.info}}">{{thing.name}}<button type="button" class="close" ng-click="deleteThing(thing)">&times;</button></a></li>
+      <ul class="nav nav-tabs nav-stacked col-md-4 col-lg-4 col-sm-6" ng-repeat="thing in things">
+        <li><a href="#" tooltip="{{thing.name}}">{{thing.name}}: {{thing.value / 1000}} sec<button type="button" class="close" ng-click="deleteThing(thing)">&times;</button></a></li>
       </ul>
     </div>
   </div>
 
-  <form ng-show="isLoggedIn()" class="thing-form">
-    <p class="input-group">
-      <span class="input-group-btn">
-        <button type="submit" class="btn btn-primary" ng-click="setWatering()">Watering</button>
-      </span>
-    </p>
-  </form>
+  <div class="container">
+    <h2>Log</h2>
+  </div>
+  <div class="row">
+    <div class="col-lg-12">
+      <ul class="nav nav-tabs nav-stacked col-md-4 col-lg-4 col-sm-6" ng-repeat="log in logs">
+        <li>{{log.name}}:{{log.value}} ({{log.updated}})</li>
+      </ul>
+    </div>
+  </div>
 </div>
 
 <footer class="footer">
