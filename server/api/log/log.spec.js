@@ -5,31 +5,42 @@ var app = require('../../app');
 var request = require('supertest');
 var User = require('../user/user.model');
 var Log = require('./log.model');
+var Bluebird = require('bluebird');
 
 describe('GET /api/logs', function() {
   beforeEach(function (done) {
-    User.find({}).remove(function() {
-      User.create({
-        provider: 'local',
-        name: 'Test User',
-        email: 'test@example.com',
-        password: 'test'
-      }, function(err, user) {
-        Log.find({}).remove(function() {
-          Log.create([{
-            name : 'watering',
-            value : 'watered',
-            user: user.id
-          }, {
-            name : 'voltage',
-            value : '10',
-            user: user.id
-          }], function () {
-            done();
-          });
+    var removalUser = User.find({}).remove().exec();
+    var removalLog = Log.find({}).remove().exec();
+    Bluebird.all([removalUser, removalLog])
+      .spread(function() {
+        return User.create({
+          provider: 'local',
+          name: 'Test User',
+          email: 'test@example.com',
+          password: 'test'
         });
+      }).then(function(user) {
+        var today = new Date();
+        var yesterday = new Date();
+        yesterday.setDate(today.getDate() - 1);
+        return Log.create([{
+          name : 'watering',
+          value : 'watered',
+          user: user.id
+        }, {
+          name : 'voltage',
+          value : '10',
+          user: user.id,
+          updated: today
+        }, {
+          name : 'voltage',
+          value : '100',
+          user: user.id,
+          updated: yesterday
+        }]);
+      }).then(function () {
+        done();
       });
-    });
   });
 
   it('/ should respond with Log array', function(done) {
@@ -42,7 +53,7 @@ describe('GET /api/logs', function() {
           if (err) return done(err);
           res.body.should.be.instanceof(Array);
           res.body.should.be.instanceof(Array);
-          res.body.length.should.be.exactly(2);
+          res.body.length.should.be.exactly(3);
           res.body[0].name.should.be.exactly('watering');
           res.body[0].value.should.be.exactly('watered');
           should.exist(res.body[0].updated);
@@ -72,12 +83,10 @@ describe('GET /api/logs', function() {
         .expect('Content-Type', /json/)
         .end(function(err, res) {
           if (err) return done(err);
-          res.body.should.be.instanceof(Array);
-          res.body.should.be.instanceof(Array);
-          res.body.length.should.be.exactly(1);
-          res.body[0].name.should.be.exactly('voltage');
-          res.body[0].value.should.be.exactly('10');
-          should.exist(res.body[0].updated);
+          res.body.should.be.instanceof(Object);
+          res.body.name.should.be.exactly('voltage');
+          res.body.value.should.be.exactly('10');
+          should.exist(res.body.updated);
           done();
         });
     });

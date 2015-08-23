@@ -6,6 +6,13 @@
   </div>
 </header>
 
+<div ng-hide="isLoggedIn()" class="container center-block">
+  <br />
+  <a class="btn btn-google-plus" href="" ng-click="loginOauth('google')">
+    <i class="fa fa-google-plus"></i> Connect with Google+
+  </a>
+</div>
+
 <div class="container">
   <form ng-show="isLoggedIn()" class="thing-form">
     <p class="input-group">
@@ -23,11 +30,6 @@
         <button type="submit" class="btn btn-primary" ng-click="setWatering(5000)">Watering 5 sec</button>
       </span>
     </p>
-    <p class="input-group">
-      <span class="input-group-btn">
-        <button type="submit" class="btn btn-primary" ng-click="setWatering(3000)">Watering 3 sec</button>
-      </span>
-    </p>
   </form>
 
   <div class="row">
@@ -38,14 +40,14 @@
     </div>
   </div>
 
-  <div class="container">
-    <h2>Log</h2>
-  </div>
-  <div class="row">
-    <div class="col-lg-12">
-      <ul class="nav nav-tabs nav-stacked col-md-4 col-lg-4 col-sm-6" ng-repeat="log in logs">
-        <li>{{log.name}}:{{log.value}} ({{log.updated}})</li>
-      </ul>
+  <div ng-show="isLoggedIn()" class="container">
+    <h3>Latest voltage</h3>
+    <div class="row">
+      <div class="col-lg-12">
+        <ul class="nav nav-tabs nav-stacked col-md-4 col-lg-4 col-sm-6" ng-repeat="voltage in voltages">
+          <li>{{voltage.name}}:{{voltage.value}} ({{voltage.beforeFromNow}} seconds ago)</li>
+        </ul>
+      </div>
     </div>
   </div>
 </div>

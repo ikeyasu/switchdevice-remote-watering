@@ -60,14 +60,12 @@ exports.destroy = function(req, res) {
 };
 
 exports.voltage = function(req, res) {
-  var condition = {name: 'voltage'};
   var user_id = req.params.user_id;
-  if (user_id) {
-    condition = _.merge(condition, {user: user_id});
-  }
-  Log.find(condition, function (err, logs) {
+  var condition = {name: 'voltage', user: user_id};
+  var query = Log.where(condition);
+  query.sort({'updated': -1}).findOne({}, '-user -_id -__v', function (err, log) {
     if(err) { return handleError(res, err); }
-    return res.json(200, logs);
+    return res.json(200, log);
   });
 };
 

@@ -10,9 +10,8 @@
 #define DPLN(x) ((void)0)
 #endif
 
-const char* WIFI_SSID     = "megascale";
-const char* WIFI_PASSWORD = "dependability";
-
+// const char* WIFI_SSID     = "ssid";
+// const char* WIFI_PASSWORD = "wepkey or passphrase";
 // const char* HOST = "example.com";
 // const char* PATH = "/api/things/watering/user/XXXXXXX/voltage/";
 #include "localSetting.h"
